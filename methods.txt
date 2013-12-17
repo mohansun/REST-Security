@@ -1,0 +1,74 @@
+
+RESTful Web Service Security:
+
+REF:http://docs.oracle.com/cd/E24329_01/web.1211/e24983/secure.htm
+
+4 methods:
+
+
+1. Updating the web.xml deployment descriptor to define security configuration:
+
+...
+  <security-constraint>
+         <web-resource-collection>
+             <web-resource-name>Orders</web-resource-name>
+             <url-pattern>/orders</url-pattern>
+             <http-method>GET</http-method>
+             <http-method>POST</http-method>
+         </web-resource-collection>
+         <auth-constraint>
+             <role-name>admin</role-name> 
+         </auth-constraint>
+  </security-constraint>
+     <login-config>
+            <auth-method>BASIC</auth-method>
+            <realm-name>default</realm-name>
+    </login-config>
+    <security-role>
+        <role-name>admin</role-name>
+    </security-role>
+...
+
+
+2. Using the javax.ws.rs.core.SecurityContext interface to implement security programmatically
+
+
+...
+import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.Context;
+...
+
+        @GET
+        @Produces("text/plain;charset=UTF-8")
+        @Path("/hello")
+        // inject an instance of SecurityContext into the sc method pameter using the @Context annotation,
+        //  and check whether the authorized user is included in arthe admin role before returning the response.
+        public String sayHello(@Context SecurityContext sc) { 
+                if (sc.isUserInRole("admin"))  return "Hello World!";
+                throw new SecurityException("User is unauthorized.");
+        }
+...
+
+
+3. Applying annotations to your JAX-RS classes. See Securing RESTful Web Services Using Annotations:
+
+...
+import javax.annotation.Security.RolesAllowed;
+
+ 
+	@Path("/helloworld")
+	@RolesAllowed({"ADMIN", "ORG1"})
+	public class helloWorld {
+
+	   @GET
+	   @Path("sayHello")  
+	   @Produces("text/plain")
+	   @RolesAllows("ADMIN")
+	   public String sayHello() {
+	      return "Hello World!";
+	   }
+	}
+
+
+4. Using Jersey OAuth libraries to sign and verify requests.
+details: https://wikis.oracle.com/display/Jersey/OAuth
