@@ -1,4 +1,3 @@
-
 RESTful Web Service Security:
 
 REF:http://docs.oracle.com/cd/E24329_01/web.1211/e24983/secure.htm
@@ -42,7 +41,7 @@ import javax.ws.rs.core.Context;
         @Produces("text/plain;charset=UTF-8")
         @Path("/hello")
         // inject an instance of SecurityContext into the sc method pameter using the @Context annotation,
-        //  and check whether the authorized user is included in arthe admin role before returning the response.
+        //  and check whether the authorized user is included in the admin role before returning the response.
         public String sayHello(@Context SecurityContext sc) { 
                 if (sc.isUserInRole("admin"))  return "Hello World!";
                 throw new SecurityException("User is unauthorized.");
